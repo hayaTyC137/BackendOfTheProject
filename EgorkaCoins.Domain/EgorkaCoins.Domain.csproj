@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EgorkaCoins.Helpers\EgorkaCoins.Helpers.csproj" />
+  </ItemGroup>
+
 </Project>
