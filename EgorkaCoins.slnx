@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="EgorkaCoins.Api/EgorkaCoins.Api.csproj" />
+  <Project Path="EgorkaCoins.BusinessLogic/EgorkaCoins.BusinessLogic.csproj" />
+  <Project Path="EgorkaCoins.DataAccess/EgorkaCoins.DataAccess.csproj" Id="341ae33c-305a-41f6-987c-7f6212361fb6" />
+  <Project Path="EgorkaCoins.Domain/EgorkaCoins.Domain.csproj" />
+  <Project Path="EgorkaCoins.Helpers/EgorkaCoins.Helpers.csproj" />
+</Solution>

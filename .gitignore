@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build результаты
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+out/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Логи
+*.log
+logs/
+
+# OS файлы
+.DS_Store
+Thumbs.db
+
+EgorkaCoins.Helpers
+EgorkaCoins.Domain
