@@ -1,3 +1,5 @@
+using AutoMapper;
+using EgorkaCoins.BusinessLogic;
 using EgorkaCoins.DataAccess;
 using EgorkaCoins.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 DbSession.ConnectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")!;
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

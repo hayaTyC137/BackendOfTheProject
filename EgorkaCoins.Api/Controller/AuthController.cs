@@ -1,4 +1,5 @@
-﻿using EgorkaCoins.BusinessLogic.Core;
+﻿using AutoMapper;
+using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,11 @@ namespace EgorkaCoins.Api.Controller
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserActions _userActions = new UserActions();
+        private readonly UserActions _userActions;
+        public AuthController(IMapper mapper)
+        {
+            _userActions = new UserActions(mapper);
+        }
 
         // POST api/auth/register
         [HttpPost("register")]
