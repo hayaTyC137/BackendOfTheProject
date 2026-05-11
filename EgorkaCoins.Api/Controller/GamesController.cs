@@ -1,4 +1,5 @@
-﻿using EgorkaCoins.BusinessLogic.Core;
+﻿using EgorkaCoins.Api.Filters;
+using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace EgorkaCoins.Api.Controller
     {
         private readonly GameActions _gameActions = new GameActions();
 
-        // GET api/games
+        // GET api/games — публично
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -18,7 +19,7 @@ namespace EgorkaCoins.Api.Controller
             return Ok(games);
         }
 
-        // GET api/games/valorant
+        // GET api/games/valorant — публично
         [HttpGet("{id}")]
         public IActionResult GetById(string id)
         {
@@ -28,7 +29,7 @@ namespace EgorkaCoins.Api.Controller
             return Ok(game);
         }
 
-        // GET api/games/valorant/packages
+        // GET api/games/valorant/packages — публично
         [HttpGet("{id}/packages")]
         public IActionResult GetPackages(string id)
         {
@@ -36,8 +37,10 @@ namespace EgorkaCoins.Api.Controller
             return Ok(packages);
         }
 
-        // POST api/games
+        // POST api/games — только admin/moderator
         [HttpPost]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Create([FromBody] Game game)
         {
             var created = _gameActions.Create(game);
@@ -46,8 +49,10 @@ namespace EgorkaCoins.Api.Controller
             return StatusCode(201, created);
         }
 
-        // PUT api/games/valorant
+        // PUT api/games/valorant — только admin/moderator
         [HttpPut("{id}")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Update(string id, [FromBody] Game updated)
         {
             var game = _gameActions.Update(id, updated);
@@ -56,8 +61,10 @@ namespace EgorkaCoins.Api.Controller
             return Ok(game);
         }
 
-        // DELETE api/games/valorant
+        // DELETE api/games/valorant — только admin/moderator
         [HttpDelete("{id}")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Delete(string id)
         {
             var result = _gameActions.Delete(id);

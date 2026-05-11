@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EgorkaCoins.Api.Filters;
 using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -16,45 +17,35 @@ namespace EgorkaCoins.Api.Controller
             _userActions = new UserActions(mapper);
         }
 
-        // GET api/users/me — профиль текущего пользователя
+        // GET api/users/me — любой залогиненный
         [HttpGet("me")]
+        [RequireAuth]
         public IActionResult GetMe()
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var user = _userActions.GetById(userId.Value);
-            if (user == null)
-                return NotFound(new { message = "Пользователь не найден" });
-
+            var userId = HttpContext.Session.GetInt32("userId")!.Value;
+            var user = _userActions.GetById(userId);
             return Ok(user);
         }
 
-        // PUT api/users/me — обновить профиль
+        // PUT api/users/me — любой залогиненный
         [HttpPut("me")]
+        [RequireAuth]
         public IActionResult UpdateMe([FromBody] UpdateUserRequest request)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var user = _userActions.Update(userId.Value, request);
+            var userId = HttpContext.Session.GetInt32("userId")!.Value;
+            var user = _userActions.Update(userId, request);
             if (user == null)
                 return BadRequest(new { message = "Имя или email уже заняты" });
-
             return Ok(user);
         }
 
-        // DELETE api/users/me — удалить свой аккаунт
+        // DELETE api/users/me — любой залогиненный
         [HttpDelete("me")]
+        [RequireAuth]
         public IActionResult DeleteMe()
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var result = _userActions.Delete(userId.Value);
+            var userId = HttpContext.Session.GetInt32("userId")!.Value;
+            var result = _userActions.Delete(userId);
             if (!result)
                 return NotFound(new { message = "Пользователь не найден" });
 
@@ -62,75 +53,61 @@ namespace EgorkaCoins.Api.Controller
             return NoContent();
         }
 
-        // GET api/users — все пользователи (admin)
+        // GET api/users — только admin/moderator
         [HttpGet]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult GetAll()
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var users = _userActions.GetAll();
             return Ok(users);
         }
 
-        // GET api/users/5
+        // GET api/users/5 — только admin/moderator
         [HttpGet("{id}")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult GetById(int id)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var user = _userActions.GetById(id);
             if (user == null)
                 return NotFound(new { message = $"User {id} not found" });
-
             return Ok(user);
         }
 
-        // PUT api/users/5/ban — забанить / разбанить
+        // PUT api/users/5/ban — только admin/moderator
         [HttpPut("{id}/ban")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult SetBan(int id, [FromBody] SetBanRequest request)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var user = _userActions.SetBan(id, request.IsBanned);
             if (user == null)
                 return NotFound(new { message = $"User {id} not found" });
-
             return Ok(user);
         }
 
-        // PUT api/users/5/role — сменить роль
+        // PUT api/users/5/role — только admin/moderator
         [HttpPut("{id}/role")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult SetRole(int id, [FromBody] SetRoleRequest request)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var user = _userActions.SetRole(id, request.Role);
             if (user == null)
                 return NotFound(new { message = $"User {id} not found" });
-
             return Ok(user);
         }
 
-        // DELETE api/users/5 — удалить пользователя (admin)
+        // DELETE api/users/5 — только admin/moderator
         [HttpDelete("{id}")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Delete(int id)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var result = _userActions.Delete(id);
             if (!result)
                 return NotFound(new { message = $"User {id} not found" });
-
             return NoContent();
         }
     }

@@ -1,4 +1,5 @@
-﻿using EgorkaCoins.BusinessLogic.Core;
+﻿using EgorkaCoins.Api.Filters;
+using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace EgorkaCoins.Api.Controller
 
         // GET api/orders — заказы текущего пользователя
         [HttpGet]
+        [RequireAuth]
         public IActionResult GetMyOrders()
         {
             var userId = HttpContext.Session.GetInt32("userId");
@@ -24,6 +26,8 @@ namespace EgorkaCoins.Api.Controller
 
         // GET api/orders/all — все заказы (для admin/moderator)
         [HttpGet("all")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult GetAll()
         {
             var userId = HttpContext.Session.GetInt32("userId");
@@ -36,6 +40,7 @@ namespace EgorkaCoins.Api.Controller
 
         // GET api/orders/5
         [HttpGet("{id}")]
+        [RequireAuth]
         public IActionResult GetById(int id)
         {
             var userId = HttpContext.Session.GetInt32("userId");
@@ -51,6 +56,8 @@ namespace EgorkaCoins.Api.Controller
 
         // POST api/orders — создать заказы из корзины
         [HttpPost]
+        [RequireAuth]
+
         public IActionResult Create([FromBody] List<CreateOrderRequest> items)
         {
             var userId = HttpContext.Session.GetInt32("userId");
@@ -66,6 +73,8 @@ namespace EgorkaCoins.Api.Controller
 
         // PUT api/orders/5/status — обновить статус
         [HttpPut("{id}/status")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
         {
             var userId = HttpContext.Session.GetInt32("userId");
@@ -81,6 +90,9 @@ namespace EgorkaCoins.Api.Controller
 
         // DELETE api/orders/5
         [HttpDelete("{id}")]
+        [RequireAuth]
+        [AdminMod]
+
         public IActionResult Delete(int id)
         {
             var userId = HttpContext.Session.GetInt32("userId");
@@ -94,4 +106,4 @@ namespace EgorkaCoins.Api.Controller
             return NoContent();
         }
     }
-}
+}   

@@ -1,4 +1,5 @@
-﻿using EgorkaCoins.BusinessLogic.Core;
+﻿using EgorkaCoins.Api.Filters;
+using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,8 @@ namespace EgorkaCoins.Api.Controller
 
         // POST api/packages
         [HttpPost]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Create([FromBody] Package package)
         {
             var created = _packageActions.Create(package);
@@ -40,6 +43,8 @@ namespace EgorkaCoins.Api.Controller
 
         // PUT api/packages/vp1
         [HttpPut("{id}")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Update(string id, [FromBody] Package updated)
         {
             var package = _packageActions.Update(id, updated);
@@ -50,6 +55,8 @@ namespace EgorkaCoins.Api.Controller
 
         // DELETE api/packages/vp1
         [HttpDelete("{id}")]
+        [RequireAuth]
+        [AdminMod]
         public IActionResult Delete(string id)
         {
             var result = _packageActions.Delete(id);
