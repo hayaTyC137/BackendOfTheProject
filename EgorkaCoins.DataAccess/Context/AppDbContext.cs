@@ -5,6 +5,7 @@ namespace EgorkaCoins.DataAccess.Context
 {
     public class AppDbContext : DbContext
     {
+        public DbSet<Report> Reports { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Package> Packages { get; set; }

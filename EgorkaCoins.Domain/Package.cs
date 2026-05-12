@@ -1,4 +1,6 @@
-﻿namespace EgorkaCoins.Domain
+﻿using System.Text.Json.Serialization;
+
+namespace EgorkaCoins.Domain
 {
     public class Package
     {
@@ -13,6 +15,7 @@
         public bool Popular { get; set; }
 
         // Обратная навигация N:1
+        [JsonIgnore]
         public Game? Game { get; set; }
     }
 }

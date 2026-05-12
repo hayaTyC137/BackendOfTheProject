@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EgorkaCoins.Domain
 {
@@ -16,6 +17,7 @@ namespace EgorkaCoins.Domain
         public DateTime CreatedAt { get; set; }
 
         // Обратная навигация N:1
+        [JsonIgnore]
         public User? User { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace EgorkaCoins.Domain
+﻿using System.Text.Json.Serialization;
+
+namespace EgorkaCoins.Domain
 {
     public class User
     {
@@ -18,6 +20,7 @@
         public DateTime CreatedAt { get; set; }
 
         // Навигация 1:N
+        [JsonIgnore]
         public List<Order> Orders { get; set; } = new();
     }
 }

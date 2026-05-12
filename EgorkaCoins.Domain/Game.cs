@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EgorkaCoins.Domain
 {
@@ -17,6 +18,7 @@ namespace EgorkaCoins.Domain
         public string About { get; set; } = string.Empty;
 
         // Навигация 1:N
+        [JsonIgnore]
         public List<Package> Packages { get; set; } = new();
     }
 }
