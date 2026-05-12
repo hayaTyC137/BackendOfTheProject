@@ -14,5 +14,8 @@ namespace EgorkaCoins.Domain
         public decimal Price { get; set; }
         public string Status { get; set; } = "pending";
         public DateTime CreatedAt { get; set; }
+
+        // Обратная навигация N:1
+        public User? User { get; set; }
     }
 }

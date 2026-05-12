@@ -4,10 +4,10 @@
     {
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty; 
+        public string Password { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;     
-        public decimal Balance { get; set; }                 
+        public string Role { get; set; } = string.Empty;
+        public decimal Balance { get; set; }
         public decimal TotalSpent { get; set; }
         public int OrdersCount { get; set; }
         public int Level { get; set; }
@@ -16,5 +16,8 @@
         public bool Verified { get; set; }
         public bool IsBanned { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        // Навигация 1:N
+        public List<Order> Orders { get; set; } = new();
     }
 }

@@ -28,5 +28,21 @@ namespace EgorkaCoins.DataAccess.Context
                 optionsBuilder.UseSqlServer(DbSession.ConnectionString);
             }
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Game 1:N Package
+            modelBuilder.Entity<Game>()
+                .HasMany(g => g.Packages)
+                .WithOne(p => p.Game)
+                .HasForeignKey(p => p.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User 1:N Order
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
