@@ -10,6 +10,7 @@ namespace EgorkaCoins.DataAccess.Context
         public DbSet<Game> Games { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         // Конструктор с параметрами — для Program.cs (Dependency Injection)
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
