@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EgorkaCoins.Domain
 {
@@ -6,6 +7,7 @@ namespace EgorkaCoins.Domain
     {
         [Key]
         public int Id { get; set; }
+        public int? UserId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Game { get; set; } = string.Empty;
         public string GameColor { get; set; } = string.Empty;
@@ -13,5 +15,8 @@ namespace EgorkaCoins.Domain
         public int Stars { get; set; }
         public string Avatar { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+
+        [JsonIgnore]
+        public User? User { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace EgorkaCoins.DataAccess.Context
         {
         }
 
-        // Настройка подключения через DbSession — как в документе преподавателя
+        // Настройка подключения через DbSession
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -45,6 +45,13 @@ namespace EgorkaCoins.DataAccess.Context
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // User 1:N Review.
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Reviews)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
