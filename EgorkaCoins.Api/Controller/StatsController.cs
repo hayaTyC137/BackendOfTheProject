@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using EgorkaCoins.Api.Filters;
-using EgorkaCoins.DataAccess.Context;
+﻿using EgorkaCoins.DataAccess.Context;
 using EgorkaCoins.Helpers.DTOs;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EgorkaCoins.Api.Controller
 {
@@ -11,14 +9,11 @@ namespace EgorkaCoins.Api.Controller
     [ApiController]
     public class StatsController : ControllerBase
     {
-        // GET api/admin/stats
         [HttpGet("stats")]
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "admin,moderator")]
         public IActionResult GetStats()
         {
             using var db = new AppDbContext();
-
             var today = DateTime.UtcNow.Date;
 
             var stats = new AdminStatsDto

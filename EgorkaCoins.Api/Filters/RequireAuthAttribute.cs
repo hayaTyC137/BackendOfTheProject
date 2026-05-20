@@ -1,6 +1,7 @@
 ﻿using EgorkaCoins.DataAccess.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Security.Claims;
 
 namespace EgorkaCoins.Api.Filters
 {
@@ -8,30 +9,28 @@ namespace EgorkaCoins.Api.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var userId = context.HttpContext.Session.GetInt32("userId");
+            var userIdClaim = context.HttpContext.User
+                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId == null)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 context.Result = new JsonResult(new { message = "Не авторизован" })
-                {
-                    StatusCode = 401
-                };
+                { StatusCode = 401 };
                 return;
             }
 
-            // Проверяем что пользователь существует и не забанен
             using var db = new AppDbContext();
-            var user = db.Users.FirstOrDefault(u => u.Id == userId.Value);
+            var user = db.Users.FirstOrDefault(u => u.Id == userId);
 
             if (user == null || user.IsBanned)
             {
-                context.HttpContext.Session.Clear();
                 context.Result = new JsonResult(new { message = "Доступ запрещён" })
-                {
-                    StatusCode = 403
-                };
+                { StatusCode = 403 };
                 return;
             }
+
+            // Передаём userId дальше в контроллер
+            context.HttpContext.Items["userId"] = userId;
 
             base.OnActionExecuting(context);
         }

@@ -1,7 +1,8 @@
-using EgorkaCoins.Api.Filters;
 using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EgorkaCoins.Api.Controller
 {
@@ -12,13 +13,11 @@ namespace EgorkaCoins.Api.Controller
         private readonly ReviewActions _reviewActions = new ReviewActions();
 
         [HttpGet]
-        public IActionResult GetAll()
-        {
-            var reviews = _reviewActions.GetAll();
-            return Ok(reviews);
-        }
+        [AllowAnonymous]
+        public IActionResult GetAll() => Ok(_reviewActions.GetAll());
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetById(int id)
         {
             var review = _reviewActions.GetById(id);
@@ -28,108 +27,69 @@ namespace EgorkaCoins.Api.Controller
         }
 
         [HttpGet("my")]
-        [RequireAuth]
+        [Authorize]
         public IActionResult GetMy()
-        {
-            var userId = GetCurrentUserId();
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var reviews = _reviewActions.GetByUserId(userId.Value);
-            return Ok(reviews);
-        }
+            => Ok(_reviewActions.GetByUserId(GetCurrentUserId()));
 
         [HttpPost]
-        [RequireAuth]
+        [Authorize]
         public IActionResult Create([FromBody] CreateReviewRequest request)
         {
-            var validation = ValidateReviewRequest(request);
+            var validation = Validate(request);
             if (validation != null) return validation;
 
-            var userId = GetCurrentUserId();
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var (result, review) = _reviewActions.CreateForUser(request, userId.Value);
-            if (result == ReviewActionResult.Forbidden)
-                return ForbiddenResponse();
-
+            var (result, review) = _reviewActions.CreateForUser(request, GetCurrentUserId());
+            if (result == ReviewActionResult.Forbidden) return Forbidden();
             return StatusCode(201, review);
         }
 
         [HttpPut("{id}")]
-        [RequireAuth]
+        [Authorize]
         public IActionResult Update(int id, [FromBody] CreateReviewRequest request)
         {
-            var validation = ValidateReviewRequest(request);
+            var validation = Validate(request);
             if (validation != null) return validation;
 
-            var userId = GetCurrentUserId();
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var (result, review) = _reviewActions.UpdateForUser(id, request, userId.Value);
+            var (result, review) = _reviewActions.UpdateForUser(id, request, GetCurrentUserId());
             if (result == ReviewActionResult.NotFound)
                 return NotFound(new { message = $"Review {id} not found" });
-            if (result == ReviewActionResult.Forbidden)
-                return ForbiddenResponse();
-
+            if (result == ReviewActionResult.Forbidden) return Forbidden();
             return Ok(review);
         }
 
         [HttpDelete("{id}")]
-        [RequireAuth]
+        [Authorize]
         public IActionResult Delete(int id)
         {
-            var userId = GetCurrentUserId();
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var result = _reviewActions.DeleteAllowed(id, userId.Value);
+            var result = _reviewActions.DeleteAllowed(id, GetCurrentUserId());
             if (result == ReviewActionResult.NotFound)
                 return NotFound(new { message = $"Review {id} not found" });
-            if (result == ReviewActionResult.Forbidden)
-                return ForbiddenResponse();
-
+            if (result == ReviewActionResult.Forbidden) return Forbidden();
             return NoContent();
         }
 
         [HttpDelete("my/{id}")]
-        [RequireAuth]
+        [Authorize]
         public IActionResult DeleteMy(int id)
         {
-            var userId = GetCurrentUserId();
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var result = _reviewActions.DeleteForUser(id, userId.Value);
+            var result = _reviewActions.DeleteForUser(id, GetCurrentUserId());
             if (result == ReviewActionResult.NotFound)
                 return NotFound(new { message = $"Review {id} not found" });
-
             return NoContent();
         }
 
-        private int? GetCurrentUserId()
-        {
-            return HttpContext.Session.GetInt32("userId");
-        }
+        private int GetCurrentUserId()
+            => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        private IActionResult ForbiddenResponse()
-        {
-            return StatusCode(403, new { message = "Недостаточно прав, требуется роль admin или moderator" });
-        }
+        private IActionResult Forbidden()
+            => StatusCode(403, new { message = "Недостаточно прав" });
 
-        private IActionResult? ValidateReviewRequest(CreateReviewRequest request)
+        private IActionResult? Validate(CreateReviewRequest r)
         {
-            if (string.IsNullOrWhiteSpace(request.Game) ||
-                string.IsNullOrWhiteSpace(request.Text))
-            {
+            if (string.IsNullOrWhiteSpace(r.Game) || string.IsNullOrWhiteSpace(r.Text))
                 return BadRequest(new { message = "Заполните все поля отзыва" });
-            }
-
-            if (request.Stars < 1 || request.Stars > 5)
+            if (r.Stars < 1 || r.Stars > 5)
                 return BadRequest(new { message = "Оценка должна быть от 1 до 5" });
-
             return null;
         }
     }

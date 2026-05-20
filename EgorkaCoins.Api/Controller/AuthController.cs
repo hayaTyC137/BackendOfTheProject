@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using EgorkaCoins.Api.Services;
 using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EgorkaCoins.Api.Controller
 {
@@ -10,13 +13,16 @@ namespace EgorkaCoins.Api.Controller
     public class AuthController : ControllerBase
     {
         private readonly UserActions _userActions;
-        public AuthController(IMapper mapper)
+        private readonly TokenService _tokenService;
+
+        public AuthController(IMapper mapper, TokenService tokenService)
         {
             _userActions = new UserActions(mapper);
+            _tokenService = tokenService;
         }
 
-        // POST api/auth/register
         [HttpPost("register")]
+        [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterRequest request)
         {
             if (string.IsNullOrEmpty(request.Username) ||
@@ -29,18 +35,14 @@ namespace EgorkaCoins.Api.Controller
             var user = _userActions.Register(request);
 
             if (user == null)
-            {
                 return BadRequest(new { message = "Пользователь с таким email или ником уже существует" });
-            }
 
-            // Сохраняем сессию в cookie
-            HttpContext.Session.SetInt32("userId", user.Id);
-
-            return StatusCode(201, user);
+            var token = _tokenService.GenerateToken(user.Id, user.Username, user.Role);
+            return StatusCode(201, new { token, user });
         }
 
-        // POST api/auth/login
         [HttpPost("login")]
+        [AllowAnonymous]
         public IActionResult Login([FromBody] LoginRequest request)
         {
             if (string.IsNullOrEmpty(request.Identifier) ||
@@ -52,41 +54,29 @@ namespace EgorkaCoins.Api.Controller
             var user = _userActions.Login(request);
 
             if (user == null)
-            {
                 return Unauthorized(new { message = "Неверный логин или пароль" });
-            }
 
-            // Сохраняем сессию в cookie
-            HttpContext.Session.SetInt32("userId", user.Id);
-
-            return Ok(user);
+            var token = _tokenService.GenerateToken(user.Id, user.Username, user.Role);
+            return Ok(new { token, user });
         }
 
-        // POST api/auth/logout
         [HttpPost("logout")]
+        [AllowAnonymous]
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            // JWT stateless — клиент просто удаляет токен у себя
             return Ok(new { message = "Выход выполнен" });
         }
 
-        // GET api/auth/me
         [HttpGet("me")]
+        [Authorize]
         public IActionResult Me()
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-
-            if (userId == null)
-            {
-                return Unauthorized(new { message = "Не авторизован" });
-            }
-
-            var user = _userActions.GetById(userId.Value);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user = _userActions.GetById(userId);
 
             if (user == null)
-            {
                 return Unauthorized(new { message = "Пользователь не найден" });
-            }
 
             return Ok(user);
         }

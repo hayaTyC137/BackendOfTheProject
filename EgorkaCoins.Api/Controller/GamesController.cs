@@ -1,6 +1,6 @@
-﻿using EgorkaCoins.Api.Filters;
-using EgorkaCoins.BusinessLogic.Core;
+﻿using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EgorkaCoins.Api.Controller
@@ -11,16 +11,12 @@ namespace EgorkaCoins.Api.Controller
     {
         private readonly GameActions _gameActions = new GameActions();
 
-        // GET api/games — публично
         [HttpGet]
-        public IActionResult GetAll()
-        {
-            var games = _gameActions.GetAll();
-            return Ok(games);
-        }
+        [AllowAnonymous]
+        public IActionResult GetAll() => Ok(_gameActions.GetAll());
 
-        // GET api/games/valorant — публично
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetById(string id)
         {
             var game = _gameActions.GetById(id);
@@ -29,18 +25,12 @@ namespace EgorkaCoins.Api.Controller
             return Ok(game);
         }
 
-        // GET api/games/valorant/packages — публично
         [HttpGet("{id}/packages")]
-        public IActionResult GetPackages(string id)
-        {
-            var packages = _gameActions.GetPackages(id);
-            return Ok(packages);
-        }
+        [AllowAnonymous]
+        public IActionResult GetPackages(string id) => Ok(_gameActions.GetPackages(id));
 
-        // POST api/games — только admin/moderator
         [HttpPost]
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "admin,moderator")]
         public IActionResult Create([FromBody] Game game)
         {
             var created = _gameActions.Create(game);
@@ -49,10 +39,8 @@ namespace EgorkaCoins.Api.Controller
             return StatusCode(201, created);
         }
 
-        // PUT api/games/valorant — только admin/moderator
         [HttpPut("{id}")]
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "admin,moderator")]
         public IActionResult Update(string id, [FromBody] Game updated)
         {
             var game = _gameActions.Update(id, updated);
@@ -61,10 +49,8 @@ namespace EgorkaCoins.Api.Controller
             return Ok(game);
         }
 
-        // DELETE api/games/valorant — только admin/moderator
         [HttpDelete("{id}")]
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "admin,moderator")]
         public IActionResult Delete(string id)
         {
             var result = _gameActions.Delete(id);

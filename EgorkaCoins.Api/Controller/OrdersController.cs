@@ -1,109 +1,68 @@
-﻿using EgorkaCoins.Api.Filters;
-using EgorkaCoins.BusinessLogic.Core;
+﻿using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EgorkaCoins.Api.Controller
 {
     [Route("api/orders")]
     [ApiController]
+    [Authorize]
     public class OrdersController : ControllerBase
     {
         private readonly OrderActions _orderActions = new OrderActions();
 
-        // GET api/orders — заказы текущего пользователя
         [HttpGet]
-        [RequireAuth]
         public IActionResult GetMyOrders()
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
-            var orders = _orderActions.GetByUser(userId.Value);
-            return Ok(orders);
+            return Ok(_orderActions.GetByUser(GetCurrentUserId()));
         }
 
-        // GET api/orders/all — все заказы (для admin/moderator)
         [HttpGet("all")]
-        [RequireAuth]
-        [AdminMod]
-        public IActionResult GetAll()
-        {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
+        [Authorize(Roles = "admin,moderator")]
+        public IActionResult GetAll() => Ok(_orderActions.GetAll());
 
-            var orders = _orderActions.GetAll();
-            return Ok(orders);
-        }
-
-        // GET api/orders/5
         [HttpGet("{id}")]
-        [RequireAuth]
         public IActionResult GetById(int id)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var order = _orderActions.GetById(id);
             if (order == null)
                 return NotFound(new { message = $"Order {id} not found" });
-
             return Ok(order);
         }
 
-        // POST api/orders — создать заказы из корзины
         [HttpPost]
-        [RequireAuth]
-
         public IActionResult Create([FromBody] List<CreateOrderRequest> items)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             if (items == null || items.Count == 0)
                 return BadRequest(new { message = "Корзина пуста" });
 
-            var orders = _orderActions.Create(userId.Value, items);
+            var orders = _orderActions.Create(GetCurrentUserId(), items);
             return StatusCode(201, orders);
         }
 
-        // PUT api/orders/5/status — обновить статус
         [HttpPut("{id}/status")]
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "admin,moderator")]
         public IActionResult UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var order = _orderActions.UpdateStatus(id, request.Status);
             if (order == null)
                 return NotFound(new { message = $"Order {id} not found" });
-
             return Ok(order);
         }
 
-        // DELETE api/orders/5
         [HttpDelete("{id}")]
-        [RequireAuth]
-        [AdminMod]
-
+        [Authorize(Roles = "admin,moderator")]
         public IActionResult Delete(int id)
         {
-            var userId = HttpContext.Session.GetInt32("userId");
-            if (userId == null)
-                return Unauthorized(new { message = "Не авторизован" });
-
             var result = _orderActions.Delete(id);
             if (!result)
                 return NotFound(new { message = $"Order {id} not found" });
-
             return NoContent();
         }
+
+        private int GetCurrentUserId()
+            => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
-}   
+}
