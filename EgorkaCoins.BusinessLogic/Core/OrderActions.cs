@@ -63,6 +63,36 @@ namespace EgorkaCoins.BusinessLogic.Core
             return orders;
         }
 
+        public List<Order> CreateFromPaymentItems(int userId, List<PaymentItem> items)
+        {
+            using var db = new AppDbContext();
+
+            var now = DateTime.UtcNow;
+            var orders = items.Select(item => new Order
+            {
+                UserId = userId,
+                GameName = item.GameName,
+                GameColor = item.GameColor,
+                Item = item.Item,
+                Amount = item.Amount,
+                Price = item.TotalPrice,
+                Status = "completed",
+                CreatedAt = now
+            }).ToList();
+
+            db.Orders.AddRange(orders);
+
+            var user = db.Users.FirstOrDefault(u => u.Id == userId);
+            if (user != null)
+            {
+                user.TotalSpent += orders.Sum(o => o.Price);
+                user.OrdersCount += orders.Count;
+            }
+
+            db.SaveChanges();
+            return orders;
+        }
+
         // UPDATE status
         public Order? UpdateStatus(int id, string status)
         {

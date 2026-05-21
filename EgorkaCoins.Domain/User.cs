@@ -24,6 +24,9 @@ namespace EgorkaCoins.Domain
         public List<Order> Orders { get; set; } = new();
 
         [JsonIgnore]
+        public List<Payment> Payments { get; set; } = new();
+
+        [JsonIgnore]
         public List<Review> Reviews { get; set; } = new();
     }
 }

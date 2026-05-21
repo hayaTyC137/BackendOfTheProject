@@ -10,6 +10,8 @@ namespace EgorkaCoins.DataAccess.Context
         public DbSet<Game> Games { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentItem> PaymentItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
         // Конструктор с параметрами — для Program.cs (Dependency Injection)
@@ -45,6 +47,32 @@ namespace EgorkaCoins.DataAccess.Context
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // User 1:N Payment
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Payments)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Payment 1:N PaymentItem
+            modelBuilder.Entity<Payment>()
+                .HasMany(p => p.Items)
+                .WithOne(i => i.Payment)
+                .HasForeignKey(i => i.PaymentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.TotalPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<PaymentItem>()
+                .Property(i => i.UnitPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<PaymentItem>()
+                .Property(i => i.TotalPrice)
+                .HasPrecision(18, 2);
 
             // User 1:N Review.
             modelBuilder.Entity<User>()
