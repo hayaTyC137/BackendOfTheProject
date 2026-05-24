@@ -21,6 +21,7 @@ namespace EgorkaCoins.Api.Controller
             _tokenService = tokenService;
         }
 
+        // Регистрация
         [HttpPost("register")]
         [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterRequest request)
@@ -41,6 +42,7 @@ namespace EgorkaCoins.Api.Controller
             return StatusCode(201, new { token, user });
         }
 
+        // Вход
         [HttpPost("login")]
         [AllowAnonymous]
         public IActionResult Login([FromBody] LoginRequest request)
@@ -60,14 +62,16 @@ namespace EgorkaCoins.Api.Controller
             return Ok(new { token, user });
         }
 
+        // Выход
         [HttpPost("logout")]
         [AllowAnonymous]
         public IActionResult Logout()
         {
-            // JWT stateless — клиент просто удаляет токен у себя
+            // JWT без сессии
             return Ok(new { message = "Выход выполнен" });
         }
 
+        // Текущий пользователь
         [HttpGet("me")]
         [Authorize]
         public IActionResult Me()

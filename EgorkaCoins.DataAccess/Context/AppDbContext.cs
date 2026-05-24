@@ -14,17 +14,17 @@ namespace EgorkaCoins.DataAccess.Context
         public DbSet<PaymentItem> PaymentItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
-        // Конструктор с параметрами — для Program.cs (Dependency Injection)
+        // Конструктор для DI
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
-        // Пустой конструктор — для UserActions (new AppDbContext())
+        // Пустой конструктор для ручного создания
         public AppDbContext()
         {
         }
 
-        // Настройка подключения через DbSession
+        // Настраиваем подключение
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -34,28 +34,28 @@ namespace EgorkaCoins.DataAccess.Context
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Game 1:N Package
+            // Игра -> пакеты
             modelBuilder.Entity<Game>()
                 .HasMany(g => g.Packages)
                 .WithOne(p => p.Game)
                 .HasForeignKey(p => p.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User 1:N Order
+            // Пользователь -> заказы
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Orders)
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User 1:N Payment
+            // Пользователь -> платежи
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Payments)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Payment 1:N PaymentItem
+            // Платеж -> позиции
             modelBuilder.Entity<Payment>()
                 .HasMany(p => p.Items)
                 .WithOne(i => i.Payment)
@@ -74,7 +74,7 @@ namespace EgorkaCoins.DataAccess.Context
                 .Property(i => i.TotalPrice)
                 .HasPrecision(18, 2);
 
-            // User 1:N Review.
+            // Пользователь -> отзывы
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Reviews)
                 .WithOne(r => r.User)

@@ -14,7 +14,7 @@ namespace EgorkaCoins.Domain
         public string? Badge { get; set; }
         public bool Popular { get; set; }
 
-        // Обратная навигация N:1
+        // Связь с игрой
         [JsonIgnore]
         public Game? Game { get; set; }
     }

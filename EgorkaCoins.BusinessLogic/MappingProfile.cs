@@ -8,10 +8,10 @@ namespace EgorkaCoins.BusinessLogic
     {
         public MappingProfile()
         {
-            // User → UserDto
+            // Пользователь -> DTO
             CreateMap<User, UserDto>();
 
-            // Game, Package, Order — маппятся сами (имена полей совпадают)
+            // Остальные сущности маппятся сами
             CreateMap<Game, Game>();
             CreateMap<Package, Package>();
             CreateMap<Order, Order>();

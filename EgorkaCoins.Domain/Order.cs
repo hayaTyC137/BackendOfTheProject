@@ -16,7 +16,7 @@ namespace EgorkaCoins.Domain
         public string Status { get; set; } = "pending";
         public DateTime CreatedAt { get; set; }
 
-        // Обратная навигация N:1
+        // Связь с пользователем
         [JsonIgnore]
         public User? User { get; set; }
     }

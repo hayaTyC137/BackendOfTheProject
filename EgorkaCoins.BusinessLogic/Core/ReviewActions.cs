@@ -6,6 +6,7 @@ namespace EgorkaCoins.BusinessLogic.Core
 {
     public class ReviewActions
     {
+        // Все отзывы
         public List<Review> GetAll()
         {
             using var db = new AppDbContext();
@@ -14,12 +15,14 @@ namespace EgorkaCoins.BusinessLogic.Core
                 .ToList();
         }
 
+        // Отзыв по id
         public Review? GetById(int id)
         {
             using var db = new AppDbContext();
             return db.Reviews.FirstOrDefault(r => r.Id == id);
         }
 
+        // Отзывы пользователя
         public List<Review> GetByUserId(int userId)
         {
             using var db = new AppDbContext();
@@ -29,6 +32,7 @@ namespace EgorkaCoins.BusinessLogic.Core
                 .ToList();
         }
 
+        // Создание отзыва
         public (ReviewActionResult Result, Review? Review) CreateForUser(CreateReviewRequest request, int userId)
         {
             using var db = new AppDbContext();
@@ -41,7 +45,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             {
                 UserId = user.Id,
                 Name = user.Username,
-                Avatar = BuildAvatar(user.Username),
+                Avatar = BuildAvatar(user),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -51,6 +55,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             return (ReviewActionResult.Success, review);
         }
 
+        // Обновление отзыва
         public (ReviewActionResult Result, Review? Review) UpdateForUser(int id, CreateReviewRequest request, int userId)
         {
             using var db = new AppDbContext();
@@ -70,12 +75,15 @@ namespace EgorkaCoins.BusinessLogic.Core
             if (!canUpdate)
                 return (ReviewActionResult.Forbidden, null);
 
+            review.Name = user.Username;
+            review.Avatar = BuildAvatar(user);
             ApplyReviewData(review, request);
 
             db.SaveChanges();
             return (ReviewActionResult.Success, review);
         }
 
+        // Удаление своего отзыва
         public ReviewActionResult DeleteForUser(int id, int userId)
         {
             using var db = new AppDbContext();
@@ -89,6 +97,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             return ReviewActionResult.Success;
         }
 
+        // Удаление отзыва по правам
         public ReviewActionResult DeleteAllowed(int id, int userId)
         {
             using var db = new AppDbContext();
@@ -121,20 +130,44 @@ namespace EgorkaCoins.BusinessLogic.Core
             review.Stars = request.Stars;
         }
 
-        private static string BuildAvatar(string username)
+        private static string BuildAvatar(User user)
         {
-            var trimmed = username.Trim();
-            if (string.IsNullOrEmpty(trimmed)) return "U";
+            if (!string.IsNullOrWhiteSpace(user.AvatarUrl))
+                return user.AvatarUrl.Trim();
 
-            var parts = trimmed
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var username = user.Username == null ? "" : user.Username.Trim();
+            if (username == "")
+                return "U";
 
-            if (parts.Length >= 2)
-                return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+            var parts = username.Split(' ');
+            var first = "";
+            var second = "";
 
-            return trimmed.Length >= 2
-                ? trimmed[..2].ToUpper()
-                : trimmed.ToUpper();
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (parts[i] != "")
+                {
+                    first = parts[i];
+                    break;
+                }
+            }
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (parts[i] != "" && parts[i] != first)
+                {
+                    second = parts[i];
+                    break;
+                }
+            }
+
+            if (first != "" && second != "")
+                return (first.Substring(0, 1) + second.Substring(0, 1)).ToUpper();
+
+            if (username.Length >= 2)
+                return username.Substring(0, 2).ToUpper();
+
+            return username.ToUpper();
         }
     }
 

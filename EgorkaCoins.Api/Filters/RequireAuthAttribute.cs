@@ -29,7 +29,7 @@ namespace EgorkaCoins.Api.Filters
                 return;
             }
 
-            // Передаём userId дальше в контроллер
+            // Передаём id дальше
             context.HttpContext.Items["userId"] = userId;
 
             base.OnActionExecuting(context);

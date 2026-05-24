@@ -6,7 +6,7 @@ namespace EgorkaCoins.BusinessLogic.Core
 {
     public class OrderActions
     {
-        // READ ALL orders of a user
+        // Заказы пользователя
         public List<Order> GetByUser(int userId)
         {
             using var db = new AppDbContext();
@@ -16,7 +16,7 @@ namespace EgorkaCoins.BusinessLogic.Core
                 .ToList();
         }
 
-        // READ ALL orders (admin)
+        // Все заказы
         public List<Order> GetAll()
         {
             using var db = new AppDbContext();
@@ -25,14 +25,14 @@ namespace EgorkaCoins.BusinessLogic.Core
                 .ToList();
         }
 
-        // READ ONE
+        // Один заказ
         public Order? GetById(int id)
         {
             using var db = new AppDbContext();
             return db.Orders.FirstOrDefault(o => o.Id == id);
         }
 
-        // CREATE — принимает список заказов из корзины
+        // Создание заказов
         public List<Order> Create(int userId, List<CreateOrderRequest> items)
         {
             using var db = new AppDbContext();
@@ -51,7 +51,7 @@ namespace EgorkaCoins.BusinessLogic.Core
 
             db.Orders.AddRange(orders);
 
-            // Обновляем статистику пользователя
+            // Обновляем статистику
             var user = db.Users.FirstOrDefault(u => u.Id == userId);
             if (user != null)
             {
@@ -93,7 +93,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             return orders;
         }
 
-        // UPDATE status
+        // Обновление статуса
         public Order? UpdateStatus(int id, string status)
         {
             using var db = new AppDbContext();
@@ -106,7 +106,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             return order;
         }
 
-        // DELETE
+        // Удаление
         public bool Delete(int id)
         {
             using var db = new AppDbContext();

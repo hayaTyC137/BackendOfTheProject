@@ -38,7 +38,7 @@ builder.Services
         };
         options.Events = new JwtBearerEvents
         {
-            // 401 — токена нет или он невалидный
+            // 401 если токен плохой
             OnChallenge = async context =>
             {
                 context.HandleResponse();
@@ -48,7 +48,7 @@ builder.Services
                     "{\"message\": \"Не авторизован. Передайте токен в заголовке Authorization: Bearer <токен>\"}");
             },
 
-            // 403 — токен есть, но роль не та
+            // 403 если прав мало
             OnForbidden = async context =>
             {
                 context.Response.StatusCode = 403;
@@ -65,7 +65,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    // 1. Объявляем схему авторизации
+    // Схема авторизации
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name         = "Authorization",
@@ -76,7 +76,7 @@ builder.Services.AddSwaggerGen(c =>
         Description  = "Введи: Bearer <твой_токен>"
     });
 
-    // 2. В Swashbuckle v10 метод требует передачу структуры документа
+    // Для Swagger v10
     c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
         [new OpenApiSecuritySchemeReference("Bearer", document)] = []
@@ -102,6 +102,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();

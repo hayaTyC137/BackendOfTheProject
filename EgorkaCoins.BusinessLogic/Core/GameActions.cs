@@ -6,28 +6,28 @@ namespace EgorkaCoins.BusinessLogic.Core
 {
     public class GameActions
     {
-        // READ ALL
+        // Все игры
         public List<Game> GetAll()
         {
             using var db = new AppDbContext();
             return db.Games.ToList();
         }
 
-        // READ ONE
+        // Одна игра
         public Game? GetById(string id)
         {
             using var db = new AppDbContext();
             return db.Games.FirstOrDefault(g => g.Id == id);
         }
 
-        // READ packages of a game
+        // Пакеты игры
         public List<Package> GetPackages(string gameId)
         {
             using var db = new AppDbContext();
             return db.Packages.Where(p => p.GameId == gameId).ToList();
         }
 
-        // CREATE
+        // Добавление
         public Game? Create(Game game)
         {
             using var db = new AppDbContext();
@@ -40,7 +40,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             return game;
         }
 
-        // UPDATE
+        // Обновление
         public Game? Update(string id, Game updated)
         {
             using var db = new AppDbContext();
@@ -62,7 +62,7 @@ namespace EgorkaCoins.BusinessLogic.Core
             return game;
         }
 
-        // DELETE
+        // Удаление
         public bool Delete(string id)
         {
             using var db = new AppDbContext();

@@ -17,7 +17,7 @@ namespace EgorkaCoins.Domain
         public string Banner { get; set; } = string.Empty;
         public string About { get; set; } = string.Empty;
 
-        // Навигация 1:N
+        // Список пакетов
         [JsonIgnore]
         public List<Package> Packages { get; set; } = new();
     }

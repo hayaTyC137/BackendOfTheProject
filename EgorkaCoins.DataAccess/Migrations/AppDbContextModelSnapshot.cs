@@ -339,6 +339,10 @@ namespace EgorkaCoins.DataAccess.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -351,6 +355,15 @@ namespace EgorkaCoins.DataAccess.Migrations
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
+
+                    b.Property<bool>("NotifyOrders")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NotifyPromo")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NotifySecurity")
+                        .HasColumnType("bit");
 
                     b.Property<int>("OrdersCount")
                         .HasColumnType("int");
