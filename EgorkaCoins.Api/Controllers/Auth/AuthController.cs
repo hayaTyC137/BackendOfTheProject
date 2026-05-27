@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using EgorkaCoins.Api.Services;
+using EgorkaCoins.Api.Services.Auth;
 using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace EgorkaCoins.Api.Controller
+namespace EgorkaCoins.Api.Controllers.Auth
 {
     [Route("api/auth")]
     [ApiController]

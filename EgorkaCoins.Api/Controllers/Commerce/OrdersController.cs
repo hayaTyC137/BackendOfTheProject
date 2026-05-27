@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace EgorkaCoins.Api.Controller
+namespace EgorkaCoins.Api.Controllers.Commerce
 {
     [Route("api/orders")]
     [ApiController]

@@ -3,7 +3,7 @@ using EgorkaCoins.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EgorkaCoins.Api.Controller
+namespace EgorkaCoins.Api.Controllers.Catalog
 {
     [Route("api/packages")]
     [ApiController]

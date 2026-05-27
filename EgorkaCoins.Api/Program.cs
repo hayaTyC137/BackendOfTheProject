@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using AutoMapper;
-using EgorkaCoins.Api.Services;
+using EgorkaCoins.Api.Services.Auth;
 using EgorkaCoins.BusinessLogic;
 using EgorkaCoins.DataAccess;
 using EgorkaCoins.DataAccess.Context;

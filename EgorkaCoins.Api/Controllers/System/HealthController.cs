@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EgorkaCoins.Api.Controller
+namespace EgorkaCoins.Api.Controllers.System
 {
     [Route("api/[controller]")]
     [ApiController]

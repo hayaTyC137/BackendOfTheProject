@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 
-namespace EgorkaCoins.Api.Filters
+namespace EgorkaCoins.Api.Filters.Auth
 {
     public class RequireAuthAttribute : ActionFilterAttribute
     {

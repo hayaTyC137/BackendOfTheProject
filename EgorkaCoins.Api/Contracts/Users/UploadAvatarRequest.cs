@@ -1,4 +1,4 @@
-namespace EgorkaCoins.Api.Models
+namespace EgorkaCoins.Api.Contracts.Users
 {
     public class UploadAvatarRequest
     {

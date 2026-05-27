@@ -1,4 +1,4 @@
-using EgorkaCoins.Api.Models;
+using EgorkaCoins.Api.Contracts.Users;
 using AutoMapper;
 using EgorkaCoins.BusinessLogic.Core;
 using EgorkaCoins.Helpers.DTOs;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace EgorkaCoins.Api.Controller
+namespace EgorkaCoins.Api.Controllers.Users
 {
     [Route("api/users")]
     [ApiController]
@@ -173,8 +173,8 @@ namespace EgorkaCoins.Api.Controller
             var relativePath = avatarUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
             var oldFilePath = Path.Combine(webRootPath, relativePath);
 
-            if (System.IO.File.Exists(oldFilePath))
-                System.IO.File.Delete(oldFilePath);
+            if (global::System.IO.File.Exists(oldFilePath))
+                global::System.IO.File.Delete(oldFilePath);
         }
     }
 }

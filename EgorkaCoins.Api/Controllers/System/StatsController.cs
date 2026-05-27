@@ -3,7 +3,7 @@ using EgorkaCoins.Helpers.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EgorkaCoins.Api.Controller
+namespace EgorkaCoins.Api.Controllers.System
 {
     [Route("api/admin")]
     [ApiController]

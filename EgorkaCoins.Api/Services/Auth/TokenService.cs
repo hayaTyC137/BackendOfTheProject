@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace EgorkaCoins.Api.Services
+namespace EgorkaCoins.Api.Services.Auth
 {
     public class TokenService
     {

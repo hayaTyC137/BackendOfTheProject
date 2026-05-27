@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace EgorkaCoins.Api.Services
+namespace EgorkaCoins.Api.Services.Auth
 {
     public class OAuthService
     {
