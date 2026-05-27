@@ -95,6 +95,7 @@ namespace EgorkaCoins.BusinessLogic.Core
 
             user.TotalSpent += orders.Sum(o => o.Price);
             user.OrdersCount += orders.Count;
+            AddExperience(user, payment.TotalPrice, request.Items.Sum(i => i.Quantity));
 
             db.Payments.Add(payment);
             db.Orders.AddRange(orders);
@@ -145,6 +146,28 @@ namespace EgorkaCoins.BusinessLogic.Core
 
         private static string OnlyDigits(string value)
             => new(value.Where(char.IsDigit).ToArray());
+
+        private static void AddExperience(User user, decimal totalPrice, int totalQuantity)
+        {
+            if (user.Level <= 0)
+                user.Level = 1;
+
+            if (user.XpToNext <= 0)
+                user.XpToNext = 1000;
+
+            var gainedXp = (int)Math.Floor(totalPrice * 10m + totalQuantity * 25m);
+            if (gainedXp <= 0)
+                return;
+
+            user.Xp += gainedXp;
+
+            while (user.Xp >= user.XpToNext)
+            {
+                user.Xp -= user.XpToNext;
+                user.Level += 1;
+                user.XpToNext += 250;
+            }
+        }
     }
 
     public class PaymentCreationResult
