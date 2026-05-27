@@ -20,30 +20,64 @@ namespace EgorkaCoins.Api.Controller
         [Authorize(Roles = "admin,moderator")]
         public IActionResult GetOpen() => Ok(_reportActions.GetOpen());
 
+        [HttpGet("my")]
+        [Authorize]
+        public IActionResult GetMy() => Ok(_reportActions.GetMine(GetCurrentUserId()));
+
         [HttpPost]
         [Authorize]
         public IActionResult Create([FromBody] CreateReportRequest request)
         {
-            if (string.IsNullOrEmpty(request.Reason))
+            if (string.IsNullOrWhiteSpace(request.Reason))
                 return BadRequest(new { message = "Укажите причину жалобы" });
 
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var report = _reportActions.Create(userId, request);
+            var (result, report) = _reportActions.Create(GetCurrentUserId(), request);
 
-            if (report == null)
+            if (result == CreateReportResult.ReporterUserNotFound)
+                return Unauthorized(new { message = "Пользователь не найден" });
+
+            if (result == CreateReportResult.ReportedUserNotFound)
                 return NotFound(new { message = "Пользователь не найден" });
+
+            if (result == CreateReportResult.SelfReport)
+                return BadRequest(new { message = "Нельзя отправить жалобу на самого себя" });
+
+            if (result == CreateReportResult.DuplicateOpenReport)
+                return BadRequest(new { message = "У вас уже есть активная жалоба на этого пользователя" });
 
             return StatusCode(201, report);
         }
 
-        [HttpPut("{id}/resolve")]
+        [HttpPut("{id}/status")]
         [Authorize(Roles = "admin,moderator")]
-        public IActionResult Resolve(int id)
+        public IActionResult SetStatus(int id, [FromBody] UpdateReportStatusRequest request)
         {
-            var report = _reportActions.Resolve(id);
-            if (report == null)
+            if (string.IsNullOrWhiteSpace(request.Status))
+                return BadRequest(new { message = "Укажите новый статус жалобы" });
+
+            var (result, report) = _reportActions.SetStatus(
+                id,
+                request.Status,
+                GetCurrentUserId(),
+                GetCurrentUsername(),
+                request.ModeratorComment);
+
+            if (result == UpdateReportStatusResult.NotFound)
                 return NotFound(new { message = $"Report {id} not found" });
+
+            if (result == UpdateReportStatusResult.InvalidStatus)
+                return BadRequest(new { message = "Недопустимый статус жалобы" });
+
+            if (result == UpdateReportStatusResult.AlreadyClosed)
+                return BadRequest(new { message = "Жалоба уже закрыта" });
+
             return Ok(report);
         }
+
+        private int GetCurrentUserId()
+            => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        private string GetCurrentUsername()
+            => User.FindFirstValue(ClaimTypes.Name) ?? "moderator";
     }
 }
