@@ -1,4 +1,5 @@
 # BackendOfTheProject
+Репозиторий с frontend - https://github.com/hayaTyC137/FrontendOfTheProject
 # EgorkaCoins
 
 EgorkaCoins - это учебный онлайн-магазин для покупки игровой валюты и связанных пакетов. Проект объединяет backend на .NET и frontend на React, а также включает авторизацию, корзину, оплату, отзывы, жалобы, личный кабинет, модерацию и административные инструменты.
